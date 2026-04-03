@@ -5,8 +5,6 @@ public class VibrationEnabler : MonoBehaviour
 {
     [SerializeField] private Toggle _toggle;
     
-    public event Action<bool> OnVibrationToggle;    
-    
     void Start()
     {
         _toggle.OnClick += Toggle_OnClick;
@@ -14,6 +12,6 @@ public class VibrationEnabler : MonoBehaviour
 
     private void Toggle_OnClick(bool value)
     {
-        VibrationController.instance.SetVibrationEnabled(value);
+        VibrationController.Instance.SetVibrationEnabled(value);
     }
 }

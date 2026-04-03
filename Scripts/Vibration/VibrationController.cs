@@ -2,16 +2,16 @@ using UnityEngine;
 
 public class VibrationController : MonoBehaviour
 {
-    public static VibrationController instance;
+    public static VibrationController Instance { get; private set; }
     private bool _isVibrationEnabled;
     
     private void Awake()
     {
-        if (instance is null)
+        if (Instance is null)
         {
-            instance = this;
+            Instance = this;
         }
-        else if(instance != this)
+        else if(Instance != this)
         {
             Destroy(gameObject);
         }
