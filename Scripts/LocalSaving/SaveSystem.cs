@@ -8,16 +8,21 @@ public static class SaveSystem
     public static void Save<T>(T data)
     {
         string path = Application.persistentDataPath + "/" + typeof(T).Name + ".dat";
-        FileStream stream = File.Open(path, FileMode.Create);
-
-        if (stream == null)
+        using (FileStream stream = File.Open(path, FileMode.Create))
         {
-            Debug.Log("Data is null");
-            return;
+            if (stream == null)
+            {
+                Debug.Log("Data is null");
+                return;
+            }
+            
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(stream, data);
         }
-        
-        BinaryFormatter formatter = new BinaryFormatter();
-        formatter.Serialize(stream, data);
+
+#if UNITY_EDITOR
+        SaveJson(data);
+#endif
     }
     
     public static T Load<T>()
@@ -26,10 +31,21 @@ public static class SaveSystem
         
         if (!File.Exists(path)) return default(T);
         
-        FileStream stream = File.Open(path, FileMode.Open);
-        BinaryFormatter formatter = new BinaryFormatter();
-        return (T)formatter.Deserialize(stream);
+        using (FileStream stream = File.Open(path, FileMode.Open))
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            return (T)formatter.Deserialize(stream);
+        }
     }
+
+#if UNITY_EDITOR
+    private static void SaveJson<T>(T data)
+    {
+        string path = Application.persistentDataPath + "/" + typeof(T).Name + ".json";
+        string json = JsonUtility.ToJson(data, true);
+        File.WriteAllText(path, json);
+    }
+#endif
 }
 
 public interface ISaveable<T>
